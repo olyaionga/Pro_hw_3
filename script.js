@@ -1,10 +1,16 @@
 // 1.1
-let a = 'Front';
-let b = 'Pro';
-let c = 'End';
+let a = prompt('введіть перший рядок');
+let b = prompt('введіть другий рядок');
+let c = prompt('введіть третій рядок');
 
 console.log(a + c + b);
 
 // 1.2
-let num = ("09876");
-console.log(num.split("").join(" "));
+const number = parseInt(prompt("Введіть п'ятизначне число:"));
+const digits = number.toString().split("");
+let result = "";
+for (let i = 0; i < digits.length; i++) {
+  result += digits[i] + " ";
+}
+console.log(result.trim());
+
