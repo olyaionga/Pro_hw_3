@@ -1,12 +1,145 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <title>Product List</title>
+  <style>body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f4f4f4;
+  }
+  
+  .container {
+    max-width: 600px;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  h1 {
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  h2 {
+    color: #666;
+    margin-bottom: 10px;
+  }
+  
+  ul {
+    list-style-type: none;
+    padding: 0;
+    margin-bottom: 20px;
+  }
+  
+  li {
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+  }
+  
+  form {
+    margin-top: 20px;
+  }
+  
+  label {
+    display: inline-block;
+    width: 60px;
+    margin-right: 10px;
+    font-weight: bold;
+  }
+  
+  input[type="text"] {
+    padding: 5px;
+    width: 200px;
+  }
+  
+  button {
+    padding: 8px 16px;
+    background-color: #333;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: #555;
+  }
+  </style>
 </head>
 <body>
-<script src="./script.js"></script>
+  <h1>Product List</h1>
+
+  <h2>All Products</h2>
+  <ul id="product-list"></ul>
+  <button id="clear-products-btn">Clear product list</button>
+
+
+  <h2>Add Product</h2>
+  <form id="add-product-form">
+    <label for="name">Name:</label>
+    <input type="text" id="name" required>
+    <button type="submit">Add</button>
+  </form>
+  <script>
+  
+    fetch('/products')
+      .then(response => response.json())
+      .then(products => {
+        const productList = document.getElementById('product-list');
+        products.forEach(product => {
+          const li = document.createElement('li');
+          li.textContent = `${product.name} (ID: ${product.id})`;
+          productList.appendChild(li);
+        });
+      });
+
+    const addProductForm = document.getElementById('add-product-form');
+    addProductForm.addEventListener('submit', event => {
+      event.preventDefault();
+
+      const nameInput = document.getElementById('name');
+      const name = nameInput.value;
+
+      fetch('/products', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ name })
+      })
+      .then(response => response.json())
+      .then(product => {
+        const productList = document.getElementById('product-list');
+        const li = document.createElement('li');
+        li.textContent = `${product.name} (ID: ${product.id})`;
+        productList.appendChild(li);
+
+        nameInput.value = '';
+      })
+      .catch(error => console.log(error));
+    });
+const clearProductsBtn = document.getElementById('clear-products-btn');
+clearProductsBtn.addEventListener('click', event => {
+  event.preventDefault();
+
+  fetch('/products', {
+    method: 'DELETE'
+  })
+  .then(response => {
+    if (response.status === 204) {
+      const productList = document.getElementById('product-list');
+      productList.innerHTML = '';
+    }
+  })
+  .catch(error => {
+    console.error('Помилка при виконанні запиту DELETE:', error);
+  });
+});
+  </script>
 </body>
 </html>
